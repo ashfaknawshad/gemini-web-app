@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>G.E.M.I.N.I. Chat</title>
-    <!-- 1. Use a bolder, more readable retro font -->
+    <!-- 1. Swap back to a narrower, more readable retro font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         :root {
-            --font-family: 'Press Start 2P', cursive;
+            /* 1. Set the new font family */
+            --font-family: 'VT323', monospace;
             --background-light: #f0f0f0;
             --text-light: #333;
             --border-light: #aaa;
             --accent-light: #5a5a5a;
 
             --background-dark: #0d0d0d;
-            --text-dark: #00ff41; /* Main text green */
+            --text-dark: #00ff41;
             --border-dark: #00ff41;
-            /* 2. Softer green for headings and accents in dark mode */
             --accent-dark: #00b32d;
             --user-bubble-dark: #222;
         }
@@ -29,7 +29,8 @@
             transition: background-color 0.4s, color 0.4s;
             background-color: var(--background-light);
             color: var(--text-light);
-            font-size: 1rem;
+            /* 2. Adjust base font size for the new font */
+            font-size: 1.3rem;
             padding: 1em;
             background-image: linear-gradient(rgba(0,0,0,0.05) 50%, transparent 50%);
             background-size: 100% 4px;
@@ -56,34 +57,35 @@
         h1 {
             color: var(--accent-light);
             text-shadow: 2px 2px 0px var(--border-light);
-            letter-spacing: 2px;
+            letter-spacing: 4px;
             text-align: center;
             margin-top: 0;
-            font-size: 1.5rem;
+            font-size: 2.2rem;
         }
         
         body.dark-mode h1 {
-            /* 2. Use the new, softer green color */
             color: var(--accent-dark);
             text-shadow: 2px 2px 0px var(--text-dark);
         }
 
-        /* 3. New chat history area */
         .chat-history {
             flex-grow: 1;
             overflow-y: auto;
             margin-bottom: 1em;
             padding: 10px;
             border: 2px dashed var(--border-light);
+            display: flex;
+            flex-direction: column;
         }
         body.dark-mode .chat-history { border-color: var(--border-dark); }
         
         .message {
             margin-bottom: 1em;
-            padding: 0.8em;
+            padding: 0.8em 1em;
             max-width: 75%;
             word-wrap: break-word;
             line-height: 1.5;
+            border-radius: 5px;
         }
         
         .message.model {
@@ -97,14 +99,14 @@
             background-color: #e0e0e0;
             border: 2px solid var(--accent-light);
             align-self: flex-end;
-            text-align: right;
+            /* 3. A key UX improvement: User's own messages are easier to read when left-aligned inside their bubble */
+            text-align: left;
         }
         body.dark-mode .message.user {
             background-color: var(--user-bubble-dark);
             border-color: var(--accent-dark);
         }
         
-        /* Form for input */
         .chat-form { display: flex; }
         
         #text_input {
@@ -115,21 +117,21 @@
             border: 2px solid var(--border-light);
             padding: 10px;
             font-family: var(--font-family);
-            font-size: 1rem;
+            font-size: 1.3rem;
             resize: none;
         }
         body.dark-mode #text_input { border-color: var(--border-dark); }
-        #text_input:focus { outline: 2px solid var(--accent-light); }
-        body.dark-mode #text_input:focus { outline-color: var(--accent-dark); }
-
+        #text_input:focus { outline: none; border-style: solid; }
+        
         input[type="submit"] {
             font-family: var(--font-family);
-            font-size: 1rem;
+            font-size: 1.3rem;
             padding: 10px 15px;
             background-color: var(--accent-light);
             color: var(--background-light);
             border: 2px solid var(--text-light);
             cursor: pointer;
+            border-radius: 3px;
         }
         body.dark-mode input[type="submit"] {
             background-color: var(--accent-dark);
@@ -137,6 +139,18 @@
             border-color: var(--text-dark);
         }
         
+        /* 4. Bonus UX: Custom scrollbar that fits the theme */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-light);
+            border: 2px solid var(--border-light);
+        }
+        body.dark-mode ::-webkit-scrollbar-thumb {
+            background: var(--accent-dark);
+            border: 2px solid var(--text-dark);
+        }
+
         /* Dark Mode Toggle remains the same */
         .theme-switch-wrapper { position: fixed; top: 15px; right: 15px; display: flex; align-items: center; }
         .theme-switch { display: inline-block; height: 24px; position: relative; width: 50px; }

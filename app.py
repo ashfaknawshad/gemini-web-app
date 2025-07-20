@@ -14,7 +14,7 @@ app.secret_key = os.getenv("SECRET_KEY")
 # --- Configure the Google AI client ---
 try:
     genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-    model = genai.GenerativeModel('gemini-1.5-pro-latest') 
+    model = genai.GenerativeModel('gemini-2.0-flash-lite') 
 except Exception as e:
     print(f"Error configuring Google AI client: {e}")
     model = None
