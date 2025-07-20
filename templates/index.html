@@ -3,27 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenAI API Test</title>
+    <title>G.E.M.I.N.I. Terminal</title>
+    <!-- 1. Import a retro font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; margin: 2em; }
-        textarea { width: 100%; height: 100px; }
-        .result { margin-top: 1em; padding: 1em; border: 1px solid #ccc; background-color: #f9f9f9; }
+        /* 2. Define CSS variables for our color themes */
+        :root {
+            --font-family: 'VT323', monospace;
+            --background-light: #d2f8d2; /* Light green */
+            --text-light: #2c5c2c;       /* Dark green */
+            --border-light: #7aab7a;
+            --accent-light: #5f905f;
+
+            --background-dark: #0f190f; /* Very dark green */
+            --text-dark: #39ff14;      /* Bright neon green */
+            --border-dark: #39ff14;
+            --accent-dark: #8cff7a;
+        }
+
+        /* General body styling */
+        body {
+            font-family: var(--font-family);
+            transition: background-color 0.4s, color 0.4s;
+            background-color: var(--background-light);
+            color: var(--text-light);
+            font-size: 1.2rem;
+            padding: 2em;
+            /* Subtle scanlines effect for retro vibe */
+            background-image: linear-gradient(rgba(0,0,0,0.1) 50%, transparent 50%);
+            background-size: 100% 4px;
+        }
+
+        /* --- Dark Mode Styles --- */
+        body.dark-mode {
+            background-color: var(--background-dark);
+            color: var(--text-dark);
+            background-image: linear-gradient(rgba(0,0,0,0.3) 50%, transparent 50%);
+        }
+
+        /* --- UI Elements Styling --- */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 2px solid var(--border-light);
+            padding: 2em;
+            box-shadow: 5px 5px 0px var(--border-light);
+            transition: border-color 0.4s, box-shadow 0.4s;
+        }
+
+        body.dark-mode .container {
+            border-color: var(--border-dark);
+            box-shadow: 5px 5px 0px var(--border-dark);
+        }
+
+        h1 {
+            color: var(--accent-light);
+            text-shadow: 2px 2px 0px var(--text-light);
+            letter-spacing: 4px;
+            transition: color 0.4s, text-shadow 0.4s;
+            text-align: center;
+        }
+        
+        body.dark-mode h1 {
+            color: var(--accent-dark);
+            text-shadow: 2px 2px 0px var(--text-dark);
+        }
+
+        p {
+            line-height: 1.6;
+        }
+        
+        textarea, .result {
+            width: calc(100% - 24px); /* Adjust for padding */
+            padding: 10px;
+            margin-top: 1em;
+            background-color: transparent;
+            border: 2px dashed var(--border-light);
+            color: inherit; /* Inherit text color from body */
+            font-family: var(--font-family);
+            font-size: 1.2rem;
+            resize: vertical;
+            transition: border-color 0.4s;
+        }
+
+        body.dark-mode textarea, body.dark-mode .result {
+            border-color: var(--border-dark);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-style: solid;
+        }
+        
+        input[type="submit"] {
+            font-family: var(--font-family);
+            font-size: 1.3rem;
+            padding: 10px 20px;
+            margin-top: 1em;
+            background-color: var(--accent-light);
+            color: var(--background-light);
+            border: 2px solid var(--text-light);
+            cursor: pointer;
+            transition: background-color 0.4s, color 0.4s, border-color 0.4s;
+        }
+        
+        input[type="submit"]:hover {
+            background-color: var(--text-light);
+        }
+
+        body.dark-mode input[type="submit"] {
+            background-color: var(--accent-dark);
+            color: var(--background-dark);
+            border-color: var(--text-dark);
+        }
+        
+        body.dark-mode input[type="submit"]:hover {
+            background-color: var(--text-dark);
+        }
+
+        .result {
+            border-style: solid;
+            white-space: pre-wrap; /* Preserve formatting from the AI */
+        }
+        
+        .result p {
+            margin: 0;
+            /* Blinking cursor effect */
+            display: inline-block;
+        }
+        .result p::after {
+            content: '█';
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* --- 3. Dark Mode Toggle Switch --- */
+        .theme-switch-wrapper {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .theme-switch {
+            display: inline-block;
+            height: 24px;
+            position: relative;
+            width: 50px;
+        }
+        .theme-switch input {
+            display:none;
+        }
+        .slider {
+            background-color: var(--accent-light);
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border: 2px solid var(--text-light);
+        }
+        .slider:before {
+            background-color: var(--background-light);
+            bottom: 2px;
+            content: "";
+            height: 16px;
+            left: 2px;
+            position: absolute;
+            transition: .4s;
+            width: 16px;
+        }
+        input:checked + .slider {
+            background-color: var(--accent-dark);
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .slider.round {
+            border-radius: 34px;
+        }
+        .slider.round:before {
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
-    <h1>OpenAI API Test App</h1>
-    <p>Enter some text below and click "Generate" to get a response from the OpenAI API.</p>
-    <form action="/" method="post">
-        <label for="text_input">Your Text:</label><br>
-        <textarea id="text_input" name="text_input" required></textarea><br><br>
-        <input type="submit" value="Generate">
-    </form>
 
-    {% if generated_text %}
-        <h2>Generated Response:</h2>
-        <div class="result">
-            <p>{{ generated_text }}</p>
-        </div>
-    {% endif %}
+    <!-- Dark Mode Toggle HTML -->
+    <div class="theme-switch-wrapper">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider round"></div>
+        </label>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="container">
+        <h1>G.E.M.I.N.I. Terminal</h1>
+        <p>> Enter your command below to get a response from the Generative Engine.</p>
+        <form action="/" method="post">
+            <label for="text_input">> YOUR COMMAND:</label><br>
+            <textarea id="text_input" name="text_input" required rows="5"></textarea><br>
+            <input type="submit" value="[ EXECUTE ]">
+        </form>
+
+        {% if generated_text %}
+            <h2>> RESPONSE:</h2>
+            <div class="result">
+                <p>{{ generated_text }}</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- 4. JavaScript for Dark Mode Functionality -->
+    <script>
+        const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+        const currentTheme = localStorage.getItem('theme');
+
+        // Function to set the theme
+        function setTheme(theme) {
+            document.body.classList.toggle('dark-mode', theme === 'dark');
+            toggleSwitch.checked = (theme === 'dark');
+            localStorage.setItem('theme', theme);
+        }
+
+        // Check for saved theme in local storage
+        if (currentTheme) {
+            setTheme(currentTheme);
+        }
+
+        // Listen for toggle switch clicks
+        toggleSwitch.addEventListener('change', function(e) {
+            setTheme(e.target.checked ? 'dark' : 'light');
+        });
+    </script>
+
 </body>
 </html>
