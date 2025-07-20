@@ -3,201 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>G.E.M.I.N.I. Terminal</title>
-    <!-- 1. Import a retro font from Google Fonts -->
+    <title>G.E.M.I.N.I. Chat</title>
+    <!-- 1. Use a bolder, more readable retro font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        /* 2. Define CSS variables for our color themes */
         :root {
-            --font-family: 'VT323', monospace;
-            --background-light: #d2f8d2; /* Light green */
-            --text-light: #2c5c2c;       /* Dark green */
-            --border-light: #7aab7a;
-            --accent-light: #5f905f;
+            --font-family: 'Press Start 2P', cursive;
+            --background-light: #f0f0f0;
+            --text-light: #333;
+            --border-light: #aaa;
+            --accent-light: #5a5a5a;
 
-            --background-dark: #0f190f; /* Very dark green */
-            --text-dark: #39ff14;      /* Bright neon green */
-            --border-dark: #39ff14;
-            --accent-dark: #8cff7a;
+            --background-dark: #0d0d0d;
+            --text-dark: #00ff41; /* Main text green */
+            --border-dark: #00ff41;
+            /* 2. Softer green for headings and accents in dark mode */
+            --accent-dark: #00b32d;
+            --user-bubble-dark: #222;
         }
 
-        /* General body styling */
         body {
             font-family: var(--font-family);
             transition: background-color 0.4s, color 0.4s;
             background-color: var(--background-light);
             color: var(--text-light);
-            font-size: 1.2rem;
-            padding: 2em;
-            /* Subtle scanlines effect for retro vibe */
-            background-image: linear-gradient(rgba(0,0,0,0.1) 50%, transparent 50%);
+            font-size: 1rem;
+            padding: 1em;
+            background-image: linear-gradient(rgba(0,0,0,0.05) 50%, transparent 50%);
             background-size: 100% 4px;
         }
 
-        /* --- Dark Mode Styles --- */
         body.dark-mode {
             background-color: var(--background-dark);
             color: var(--text-dark);
-            background-image: linear-gradient(rgba(0,0,0,0.3) 50%, transparent 50%);
+            background-image: linear-gradient(rgba(0,0,0,0.2) 50%, transparent 50%);
         }
 
-        /* --- UI Elements Styling --- */
-        .container {
-            max-width: 800px;
+        .chat-container {
+            max-width: 900px;
             margin: 0 auto;
-            border: 2px solid var(--border-light);
-            padding: 2em;
-            box-shadow: 5px 5px 0px var(--border-light);
-            transition: border-color 0.4s, box-shadow 0.4s;
+            border: 3px solid var(--border-light);
+            padding: 1.5em;
+            display: flex;
+            flex-direction: column;
+            height: 85vh;
         }
 
-        body.dark-mode .container {
-            border-color: var(--border-dark);
-            box-shadow: 5px 5px 0px var(--border-dark);
-        }
+        body.dark-mode .chat-container { border-color: var(--border-dark); }
 
         h1 {
             color: var(--accent-light);
-            text-shadow: 2px 2px 0px var(--text-light);
-            letter-spacing: 4px;
-            transition: color 0.4s, text-shadow 0.4s;
+            text-shadow: 2px 2px 0px var(--border-light);
+            letter-spacing: 2px;
             text-align: center;
+            margin-top: 0;
+            font-size: 1.5rem;
         }
         
         body.dark-mode h1 {
+            /* 2. Use the new, softer green color */
             color: var(--accent-dark);
             text-shadow: 2px 2px 0px var(--text-dark);
         }
 
-        p {
-            line-height: 1.6;
-        }
-        
-        textarea, .result {
-            width: calc(100% - 24px); /* Adjust for padding */
+        /* 3. New chat history area */
+        .chat-history {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 1em;
             padding: 10px;
-            margin-top: 1em;
-            background-color: transparent;
             border: 2px dashed var(--border-light);
-            color: inherit; /* Inherit text color from body */
-            font-family: var(--font-family);
-            font-size: 1.2rem;
-            resize: vertical;
-            transition: border-color 0.4s;
         }
-
-        body.dark-mode textarea, body.dark-mode .result {
-            border-color: var(--border-dark);
-        }
-
-        textarea:focus {
-            outline: none;
-            border-style: solid;
+        body.dark-mode .chat-history { border-color: var(--border-dark); }
+        
+        .message {
+            margin-bottom: 1em;
+            padding: 0.8em;
+            max-width: 75%;
+            word-wrap: break-word;
+            line-height: 1.5;
         }
         
+        .message.model {
+            border: 2px solid var(--accent-light);
+            align-self: flex-start;
+            text-align: left;
+        }
+        body.dark-mode .message.model { border-color: var(--accent-dark); }
+
+        .message.user {
+            background-color: #e0e0e0;
+            border: 2px solid var(--accent-light);
+            align-self: flex-end;
+            text-align: right;
+        }
+        body.dark-mode .message.user {
+            background-color: var(--user-bubble-dark);
+            border-color: var(--accent-dark);
+        }
+        
+        /* Form for input */
+        .chat-form { display: flex; }
+        
+        #text_input {
+            flex-grow: 1;
+            margin-right: 10px;
+            background-color: transparent;
+            color: inherit;
+            border: 2px solid var(--border-light);
+            padding: 10px;
+            font-family: var(--font-family);
+            font-size: 1rem;
+            resize: none;
+        }
+        body.dark-mode #text_input { border-color: var(--border-dark); }
+        #text_input:focus { outline: 2px solid var(--accent-light); }
+        body.dark-mode #text_input:focus { outline-color: var(--accent-dark); }
+
         input[type="submit"] {
             font-family: var(--font-family);
-            font-size: 1.3rem;
-            padding: 10px 20px;
-            margin-top: 1em;
+            font-size: 1rem;
+            padding: 10px 15px;
             background-color: var(--accent-light);
             color: var(--background-light);
             border: 2px solid var(--text-light);
             cursor: pointer;
-            transition: background-color 0.4s, color 0.4s, border-color 0.4s;
         }
-        
-        input[type="submit"]:hover {
-            background-color: var(--text-light);
-        }
-
         body.dark-mode input[type="submit"] {
             background-color: var(--accent-dark);
             color: var(--background-dark);
             border-color: var(--text-dark);
         }
         
-        body.dark-mode input[type="submit"]:hover {
-            background-color: var(--text-dark);
-        }
-
-        .result {
-            border-style: solid;
-            white-space: pre-wrap; /* Preserve formatting from the AI */
-        }
-        
-        .result p {
-            margin: 0;
-            /* Blinking cursor effect */
-            display: inline-block;
-        }
-        .result p::after {
-            content: '█';
-            animation: blink 1s step-end infinite;
-        }
-
-        @keyframes blink {
-            from, to { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        /* --- 3. Dark Mode Toggle Switch --- */
-        .theme-switch-wrapper {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            display: flex;
-            align-items: center;
-        }
-        .theme-switch {
-            display: inline-block;
-            height: 24px;
-            position: relative;
-            width: 50px;
-        }
-        .theme-switch input {
-            display:none;
-        }
-        .slider {
-            background-color: var(--accent-light);
-            bottom: 0;
-            cursor: pointer;
-            left: 0;
-            position: absolute;
-            right: 0;
-            top: 0;
-            transition: .4s;
-            border: 2px solid var(--text-light);
-        }
-        .slider:before {
-            background-color: var(--background-light);
-            bottom: 2px;
-            content: "";
-            height: 16px;
-            left: 2px;
-            position: absolute;
-            transition: .4s;
-            width: 16px;
-        }
-        input:checked + .slider {
-            background-color: var(--accent-dark);
-        }
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-        .slider.round {
-            border-radius: 34px;
-        }
-        .slider.round:before {
-            border-radius: 50%;
-        }
+        /* Dark Mode Toggle remains the same */
+        .theme-switch-wrapper { position: fixed; top: 15px; right: 15px; display: flex; align-items: center; }
+        .theme-switch { display: inline-block; height: 24px; position: relative; width: 50px; }
+        .theme-switch input { display:none; }
+        .slider { background-color: var(--accent-light); bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; border: 2px solid var(--text-light); }
+        .slider:before { background-color: var(--background-light); bottom: 2px; content: ""; height: 16px; left: 2px; position: absolute; transition: .4s; width: 16px; }
+        input:checked + .slider { background-color: var(--accent-dark); }
+        input:checked + .slider:before { transform: translateX(26px); }
+        .slider.round { border-radius: 34px; }
+        .slider.round:before { border-radius: 50%; }
     </style>
 </head>
 <body>
 
-    <!-- Dark Mode Toggle HTML -->
     <div class="theme-switch-wrapper">
         <label class="theme-switch" for="checkbox">
             <input type="checkbox" id="checkbox" />
@@ -205,45 +158,48 @@
         </label>
     </div>
 
-    <!-- Main Content Container -->
-    <div class="container">
-        <h1>G.E.M.I.N.I. Terminal</h1>
-        <p>> Enter your command below to get a response from the Generative Engine.</p>
-        <form action="/" method="post">
-            <label for="text_input">> YOUR COMMAND:</label><br>
-            <textarea id="text_input" name="text_input" required rows="5"></textarea><br>
-            <input type="submit" value="[ EXECUTE ]">
+    <div class="chat-container">
+        <h1>G.E.M.I.N.I. Chat</h1>
+        
+        <div class="chat-history" id="chat-history">
+            <!-- Messages will be looped here from Flask -->
+            {% for message in chat_history %}
+                <div class="message {{ message.role }}">
+                    <p>{{ message.text }}</p>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <form class="chat-form" action="/" method="post" autocomplete="off">
+            <input type="text" id="text_input" name="text_input" placeholder="> Type your message..." required>
+            <input type="submit" value="SEND">
         </form>
-
-        {% if generated_text %}
-            <h2>> RESPONSE:</h2>
-            <div class="result">
-                <p>{{ generated_text }}</p>
-            </div>
-        {% endif %}
     </div>
 
-    <!-- 4. JavaScript for Dark Mode Functionality -->
     <script>
+        // JS for Dark Mode Toggle
         const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
         const currentTheme = localStorage.getItem('theme');
 
-        // Function to set the theme
         function setTheme(theme) {
             document.body.classList.toggle('dark-mode', theme === 'dark');
             toggleSwitch.checked = (theme === 'dark');
             localStorage.setItem('theme', theme);
         }
 
-        // Check for saved theme in local storage
         if (currentTheme) {
             setTheme(currentTheme);
+        } else { // Default to dark mode
+            setTheme('dark');
         }
 
-        // Listen for toggle switch clicks
         toggleSwitch.addEventListener('change', function(e) {
             setTheme(e.target.checked ? 'dark' : 'light');
         });
+
+        // JS to auto-scroll chat to the bottom
+        const chatHistory = document.getElementById('chat-history');
+        chatHistory.scrollTop = chatHistory.scrollHeight;
     </script>
 
 </body>
